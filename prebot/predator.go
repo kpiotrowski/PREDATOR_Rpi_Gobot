@@ -1,10 +1,9 @@
 package prebot
 
 import (
-	"fmt"
-	cv "github.com/lazywei/go-opencv/opencv"
 	"gobot.io/x/gobot/drivers/gpio"
 	"gobot.io/x/gobot/platforms/opencv"
+	"gocv.io/x/gocv"
 )
 
 type Predator struct {
@@ -29,26 +28,41 @@ func NewPredator(cam *opencv.CameraDriver, laser *gpio.LedDriver, motorX, motorY
 }
 
 func (p *Predator) Run() {
-	var image *cv.IplImage
+	//err := p.motorX.Min()
+	//if err != nil {
+	//	panic(err)
+	//}
+	//err = p.motorY.Min()
+	//if err != nil {
+	//	panic(err)
+	//}
+
+	//classifier := gocv.NewCascadeClassifier()
+	//defer classifier.Close()
+	//img := gocv.NewMat()
+	//defer img.Close()
+	//classifier.Load("haarcascade_frontalface_default.xml")
+	//
+
+
+
 	p.camera.On(opencv.Frame, func(data interface{}) {
-		image = data.(*cv.IplImage)
+		img := data.(gocv.Mat)
 
-		if image != nil {
-			println("DUPA JEST IMAGE")
-			i := image.Clone()
-			normal_i := i.ToImage()
-			fmt.Println(normal_i.At(10, 10).RGBA())
-			//faces := opencv.DetectFaces(cascade, i)
+		// detect faces
+		//rects := classifier.DetectMultiScale(img)
+		//fmt.Printf("found %d faces\n", len(rects))
+		//
+		//// draw a rectangle around each face on the original image
+		//for _, r := range rects {
+		//	gocv.Rectangle(img, r, color.RGBA{0, 0, 255, 0}, 3)
+		//}
 
-			//i = opencv.DrawRectangles(i, faces, 0, 255, 0, 5)
 
-			if p.Window != nil {
-				p.Window.ShowImage(i)
-			}
+		if p.Window != nil {
+			p.Window.ShowImage(img)
+			p.Window.WaitKey(1)
 		}
+
 	})
-	if p.Window != nil {
-		p.Window.Start()
-	}
-	p.camera.Start()
 }
